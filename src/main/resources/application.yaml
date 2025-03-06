@@ -14,6 +14,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: 'true'
+    open-in-view: false
   security:
     user:
       password: ADMIN123
@@ -21,3 +22,5 @@ spring:
   liquibase:
     change-log: changelog-master.xml
     enabled: 'true'
+server:
+  port: 2137
