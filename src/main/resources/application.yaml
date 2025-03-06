@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: security-tests
+  datasource:
+    password: postgres123
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    url: jdbc:postgresql://localhost:32137/postgres
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: update
+    show-sql: 'true'
+  security:
+    user:
+      password: ADMIN123
+      name: admin
+  liquibase:
+    change-log: changelog-master.xml
+    enabled: 'true'
