@@ -17,8 +17,8 @@ spring:
     open-in-view: false
   security:
     user:
-      password: ADMIN123
       name: admin
+      password: admin123
   liquibase:
     change-log: changelog-master.xml
     enabled: 'true'
