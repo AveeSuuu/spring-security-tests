@@ -21,14 +21,14 @@ public class AuthService {
   private final JwtUtils jwtUtils;
 
   public String authenticateUserRequest(AuthRequest request) {
-    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-        request.username(), request.password()
-    ));
-
     final var user = userDataRepository.loadUserByUsername(request.username());
     if (user == null) {
       throw new UserNotFoundException(request.username());
     }
+
+    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+        request.username(), request.password()
+    ));
 
     return jwtUtils.generateToken(user);
   }
