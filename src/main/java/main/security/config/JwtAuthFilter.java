@@ -8,7 +8,7 @@ import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import main.security.auth.UserRepository;
+import main.security.userData.UserDataRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-  private final UserRepository userRepository;
+  private final UserDataRepository userDataRepository;
   private final JwtUtils jwtUtils;
 
   @Override
@@ -48,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      var userDetails = userRepository.loadUserByUsername(username);
+      var userDetails = userDataRepository.loadUserByUsername(username);
       final boolean isTokenValid = jwtUtils.isTokenValid(jwt, userDetails);
 
       log.info("Sprawdzenie tokena: username={}, valid={}", username, isTokenValid);

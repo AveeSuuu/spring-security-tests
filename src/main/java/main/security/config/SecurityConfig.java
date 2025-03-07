@@ -1,7 +1,7 @@
 package main.security.config;
 
 import lombok.RequiredArgsConstructor;
-import main.security.auth.UserRepository;
+import main.security.userData.UserDataRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -24,19 +24,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
   private final JwtAuthFilter jwtAuthFilter;
-  /* NOTATKA
-   * normalnie pewno jest nierelacyjna baza z hashowanymi danymi
-   * i do niej zwyczajne repository, aby pobrać użytkowników
-   * co najwyżej jakieś batchowanie, żeby nie pobierać tysięcy rekordów na raz
-   */
-  private final UserRepository userRepository;
+  private final UserDataRepository userDataRepository;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable);
 
     http.authorizeHttpRequests(auth -> auth
-        .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/auth")).permitAll()
+        .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/auth/**")).permitAll()
         .anyRequest().authenticated());
 
     http.authenticationProvider(authenticationProvider());
@@ -63,21 +58,12 @@ public class SecurityConfig {
     return config.getAuthenticationManager();
   }
 
-  public PasswordEncoder passwordEncoder() {
-    return new PasswordEncoder() {
-      @Override
-      public String encode(CharSequence rawPassword) {
-        return rawPassword.toString();
-      }
-
-      @Override
-      public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return encodedPassword.equals(rawPassword);
-      }
-    };
+  @Bean
+  public BCryptPasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder(12);
   }
 
   public UserDetailsService userDetailsService() {
-    return userRepository::loadUserByUsername;
+    return userDataRepository::loadUserByUsername;
   }
 }
